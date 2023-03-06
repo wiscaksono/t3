@@ -51,4 +51,23 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
+
+  create: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        image: z.string(),
+        email: z.string(),
+        password: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.user.create({
+        data: {
+          name: input.name,
+          image: `https://plchldr.co/i/150x150?text=${input.name}`,
+          email: input.email,
+        },
+      });
+    }),
 });

@@ -12,10 +12,10 @@ const useStore = create((set) => ({
   navigation: [
     { name: "Home", href: "/", icon: HomeIcon, current: true },
     { name: "Team", href: "/team", icon: UsersIcon, current: false },
-    { name: "Projects", href: "#", icon: FolderIcon, current: false },
-    { name: "Calendar", href: "#", icon: CalendarIcon, current: false },
-    { name: "Documents", href: "#", icon: InboxIcon, current: false },
-    { name: "Reports", href: "#", icon: ChartBarIcon, current: false },
+    { name: "Projects", href: "/projects", icon: FolderIcon, current: false },
+    { name: "Calendar", href: "/calendar", icon: CalendarIcon, current: false },
+    { name: "Documents", href: "/documents", icon: InboxIcon, current: false },
+    { name: "Reports", href: "/reports", icon: ChartBarIcon, current: false },
   ],
 
   setCurrent: (index: number, value: boolean): void =>
