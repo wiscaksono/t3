@@ -3,9 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import useStore from "~/store/store";
 
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
-}
+import classNames from "~/utils/classNames";
 
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);

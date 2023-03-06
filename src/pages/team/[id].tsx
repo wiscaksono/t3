@@ -1,16 +1,17 @@
 import { useState, Fragment, useRef } from "react";
 import { useRouter } from "next/router";
-import { api } from "~/utils/api";
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog, Transition, Listbox } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
 import Header from "~/components/Head";
+import Loader from "~/components/Loader";
+
+import classNames from "~/utils/classNames";
+import { api } from "~/utils/api";
+import ROLES from "~/utils/data";
 
 const tabs = ["Details", "Raw Data"];
-
-function classNames(...classes: Array<String>) {
-  return classes.filter(Boolean).join(" ");
-}
 
 const Post = () => {
   const router = useRouter();
@@ -25,7 +26,10 @@ const Post = () => {
 
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [role, setRole] = useState("ADMIN");
   const cancelButtonRef = useRef(null);
+
+  if (!userData) return <Loader />;
 
   return (
     <>
@@ -75,42 +79,147 @@ const Post = () => {
         <section className="w-1/2">
           {activeTab === "Details" && (
             <form className="space-y-5 rounded-2xl border p-5">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  User id
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="id"
-                    name="id"
-                    type="text"
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    defaultValue={userData?.id}
-                  />
+              <div className="flex gap-5">
+                <div className="w-1/2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    User id
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      disabled
+                      id="id"
+                      name="id"
+                      type="text"
+                      required
+                      className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-gray-100 sm:text-sm sm:leading-6"
+                      defaultValue={userData?.id}
+                    />
+                  </div>
+                </div>
+                <div className="w-1/2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Role
+                  </label>
+
+                  <Listbox value={role} onChange={setRole}>
+                    <div className="relative mt-2">
+                      <Listbox.Button className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <span className="block truncate text-left">{role}</span>
+                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                          <ChevronUpDownIcon
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </span>
+                      </Listbox.Button>
+                      <Transition
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                      >
+                        <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          {ROLES.map((role, personIdx) => (
+                            <Listbox.Option
+                              key={personIdx}
+                              className={({ active }) =>
+                                `relative cursor-default select-none py-2 pl-10 pr-4 ${active
+                                  ? "bg-indigo-100 text-indigo-900"
+                                  : "text-gray-900"
+                                }`
+                              }
+                              value={role}
+                            >
+                              {({ selected }) => (
+                                <>
+                                  <span
+                                    className={`block truncate ${selected ? "font-medium" : "font-normal"
+                                      }`}
+                                  >
+                                    {role}
+                                  </span>
+                                  {selected ? (
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-indigo-600">
+                                      <CheckIcon
+                                        className="h-5 w-5"
+                                        aria-hidden="true"
+                                      />
+                                    </span>
+                                  ) : null}
+                                </>
+                              )}
+                            </Listbox.Option>
+                          ))}
+                        </Listbox.Options>
+                      </Transition>
+                    </div>
+                  </Listbox>
                 </div>
               </div>
 
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Name
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    autoComplete="name"
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    defaultValue={String(userData?.name)}
-                  />
+              <div className="flex items-center gap-5">
+                <div className="w-1/2">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Name
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      autoComplete="name"
+                      required
+                      className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      defaultValue={String(userData?.name)}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-1 items-center gap-5">
+                  <div className="w-1/2">
+                    <label
+                      htmlFor="createdAt"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Created at
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        id="createdAt"
+                        name="createdAt"
+                        type="date"
+                        autoComplete="createdAt"
+                        required
+                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      />
+                    </div>
+                  </div>
+                  <div className="w-1/2">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Updated at
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        id="updatedAt"
+                        name="updatedAt"
+                        type="date"
+                        autoComplete="updatedAt"
+                        required
+                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -133,6 +242,7 @@ const Post = () => {
                   />
                 </div>
               </div>
+
               <div className="flex items-center justify-end gap-2.5">
                 <button
                   type="button"
