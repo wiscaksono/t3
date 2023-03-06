@@ -1,6 +1,5 @@
 import Header from "~/components/Head";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 
 type registerProps = {
   firstName: string;
@@ -21,10 +20,18 @@ export default function Register() {
     remember: false,
   });
 
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(values);
-    signIn("credentials");
+
+    const options = {
+      method: "POST",
+      header: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    };
+
+    await fetch("/api/auth/signup", options)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
   };
 
   return (

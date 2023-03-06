@@ -1,8 +1,7 @@
 import Header from "~/components/Head";
-import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
-  const [values, setValues] = useState({});
   return (
     <>
       <Header title="Login" />
@@ -76,9 +75,9 @@ export default function Login() {
                     </div>
 
                     <div>
-                      <a
-                        href="#"
+                      <button
                         className="inline-flex w-full justify-center rounded-md bg-white py-2 px-3 text-gray-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0"
+                        onClick={() => void signIn("github")}
                       >
                         <span className="sr-only">Sign in with GitHub</span>
                         <svg
@@ -93,7 +92,7 @@ export default function Login() {
                             clipRule="evenodd"
                           />
                         </svg>
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
