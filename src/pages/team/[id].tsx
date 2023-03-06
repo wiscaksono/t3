@@ -71,6 +71,7 @@ const Post = () => {
         <h1 className="py-6 text-2xl font-semibold text-gray-900">
           {userData?.name}
         </h1>
+
         <section className="w-1/2">
           {activeTab === "Details" && (
             <form className="space-y-5 rounded-2xl border p-5">
@@ -108,7 +109,7 @@ const Post = () => {
                     autoComplete="name"
                     required
                     className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    defaultValue={userData?.name}
+                    defaultValue={String(userData?.name)}
                   />
                 </div>
               </div>
@@ -128,7 +129,7 @@ const Post = () => {
                     autoComplete="email"
                     required
                     className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    defaultValue={userData?.email}
+                    defaultValue={String(userData?.email)}
                   />
                 </div>
               </div>
@@ -152,7 +153,9 @@ const Post = () => {
 
           {activeTab === "Raw Data" && (
             <section className="rounded-2xl border p-5">
-              <pre>{JSON.stringify(userData, null, 2)}</pre>
+              <pre className="text-gray-600">
+                {JSON.stringify(userData, null, 2)}
+              </pre>
             </section>
           )}
         </section>
