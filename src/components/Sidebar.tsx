@@ -1,23 +1,7 @@
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import {
-  CalendarIcon,
-  ChartBarIcon,
-  FolderIcon,
-  HomeIcon,
-  InboxIcon,
-  UsersIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
-
-const navigation = [
-  { name: "Home", href: "/", icon: HomeIcon, current: true },
-  { name: "Team", href: "/team", icon: UsersIcon, current: false },
-  { name: "Projects", href: "#", icon: FolderIcon, current: false },
-  { name: "Calendar", href: "#", icon: CalendarIcon, current: false },
-  { name: "Documents", href: "#", icon: InboxIcon, current: false },
-  { name: "Reports", href: "#", icon: ChartBarIcon, current: false },
-];
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import useStore from "~/store/store";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -25,6 +9,8 @@ function classNames(...classes: any) {
 
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { navigation } = useStore();
+
   return (
     <>
       <Transition.Root show={sidebarOpen} as={Fragment}>
@@ -142,6 +128,7 @@ export default function Sidebar() {
           </div>
         </Dialog>
       </Transition.Root>
+
       {/* Static sidebar for desktop */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         {/* Sidebar component, swap this element with another sidebar if you like */}
@@ -155,7 +142,7 @@ export default function Sidebar() {
               />
             </div>
             <nav className="mt-5 flex-1 space-y-1 bg-white px-2">
-              {navigation.map((item) => (
+              {navigation.map((item: any) => (
                 <a
                   key={item.name}
                   href={item.href}
