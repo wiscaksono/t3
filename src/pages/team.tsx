@@ -2,6 +2,7 @@ import { useState, Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import Image from "next/image";
 import Link from "next/link";
+import { getSession } from "next-auth/react";
 
 import Loader from "~/components/Loader";
 import Layout from "~/components/Layout";
@@ -406,3 +407,19 @@ const CreateModal = ({ createModal, setCreateModal, refetchUser }: any) => {
     </Transition.Root>
   );
 };
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession(context);
+
+  if (!session)
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/auth",
+      },
+    };
+
+  return {
+    props: { session },
+  };
+}

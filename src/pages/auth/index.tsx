@@ -1,5 +1,6 @@
 import Header from "~/components/Head";
 import { signIn } from "next-auth/react";
+import { getSession } from "next-auth/react";
 
 export default function Login() {
   return (
@@ -201,4 +202,20 @@ export default function Login() {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession(context);
+
+  if (session)
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/",
+      },
+    };
+
+  return {
+    props: { session },
+  };
 }

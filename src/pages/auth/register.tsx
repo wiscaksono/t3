@@ -1,5 +1,6 @@
 import Header from "~/components/Head";
 import { useState } from "react";
+import { getSession } from "next-auth/react";
 
 type registerProps = {
   firstName: string;
@@ -22,7 +23,6 @@ export default function Register() {
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const options = {
       method: "POST",
       header: { "Content-Type": "application/json" },
@@ -227,4 +227,20 @@ export default function Register() {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession(context);
+
+  if (session)
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/",
+      },
+    };
+
+  return {
+    props: { session },
+  };
 }

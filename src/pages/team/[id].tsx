@@ -11,6 +11,8 @@ import classNames from "~/utils/classNames";
 import { api } from "~/utils/api";
 import ROLES from "~/utils/data";
 
+import useStore from "~/store/store";
+
 const tabs = ["Details", "Raw Data"];
 
 const Post = () => {
@@ -65,6 +67,7 @@ const Details = ({ userData }: any) => {
   const [role, setRole] = useState("ADMIN");
   const cancelButtonRef = useRef(null);
   const { push, query } = useRouter();
+  const { currentUser } = useStore();
 
   const handleDelete = api.user.delete.useMutation({
     onSuccess: () => {

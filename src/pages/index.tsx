@@ -1,4 +1,5 @@
 import Layout from "~/components/Layout";
+import { getSession } from "next-auth/react";
 
 export default function Example() {
   return (
@@ -19,4 +20,19 @@ export default function Example() {
       </section>
     </Layout>
   );
+}
+export async function getServerSideProps(context: any) {
+  const session = await getSession(context);
+
+  if (!session)
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/auth",
+      },
+    };
+
+  return {
+    props: { session },
+  };
 }

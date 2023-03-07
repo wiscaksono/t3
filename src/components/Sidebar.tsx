@@ -1,13 +1,31 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  XMarkIcon,
+  ArrowLeftOnRectangleIcon,
+} from "@heroicons/react/24/outline";
 import useStore from "~/store/store";
+import Link from "next/link";
+import Image from "next/image";
+import { signOut } from "next-auth/react";
 
 import classNames from "~/utils/classNames";
 
+type NavigationItem = {
+  name: string;
+  href: string;
+  icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
+  current: boolean;
+};
+
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { navigation } = useStore();
+  const { navigation, currentUser, getUser, updateNavigationCurrent } =
+    useStore();
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
     <>
@@ -72,8 +90,8 @@ export default function Sidebar() {
                     />
                   </div>
                   <nav className="mt-5 space-y-1 px-2">
-                    {navigation.map((item) => (
-                      <a
+                    {navigation.map((item: NavigationItem, i: number) => (
+                      <Link
                         key={item.name}
                         href={item.href}
                         className={classNames(
@@ -82,6 +100,7 @@ export default function Sidebar() {
                             : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                           "group flex items-center rounded-md px-2 py-2 text-base font-medium"
                         )}
+                        onClick={() => updateNavigationCurrent(i)}
                       >
                         <item.icon
                           className={classNames(
@@ -93,7 +112,7 @@ export default function Sidebar() {
                           aria-hidden="true"
                         />
                         {item.name}
-                      </a>
+                      </Link>
                     ))}
                   </nav>
                 </div>
@@ -101,15 +120,17 @@ export default function Sidebar() {
                   <a href="#" className="group block flex-shrink-0">
                     <div className="flex items-center">
                       <div>
-                        <img
+                        <Image
+                          height={40}
+                          width={40}
                           className="inline-block h-10 w-10 rounded-full"
-                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                          alt=""
+                          src={currentUser?.image}
+                          alt={currentUser?.name}
                         />
                       </div>
                       <div className="ml-3">
                         <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                          Tom Cook
+                          {currentUser?.name}
                         </p>
                         <p className="text-sm font-medium text-gray-500 group-hover:text-gray-700">
                           View profile
@@ -140,8 +161,8 @@ export default function Sidebar() {
               />
             </div>
             <nav className="mt-5 flex-1 space-y-1 bg-white px-2">
-              {navigation.map((item: any) => (
-                <a
+              {navigation.map((item: NavigationItem, i: number) => (
+                <Link
                   key={item.name}
                   href={item.href}
                   className={classNames(
@@ -150,6 +171,7 @@ export default function Sidebar() {
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                     "group flex items-center rounded-md px-2 py-2 text-sm font-medium"
                   )}
+                  onClick={() => updateNavigationCurrent(i)}
                 >
                   <item.icon
                     className={classNames(
@@ -161,30 +183,35 @@ export default function Sidebar() {
                     aria-hidden="true"
                   />
                   {item.name}
-                </a>
+                </Link>
               ))}
             </nav>
           </div>
-          <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
-            <a href="#" className="group block w-full flex-shrink-0">
+          <div className="flex flex-shrink-0 items-center border-t border-gray-200 p-4">
+            <Link href="#" className="group block w-full">
               <div className="flex items-center">
                 <div>
-                  <img
-                    className="inline-block h-9 w-9 rounded-full"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
+                  <Image
+                    height={46}
+                    width={46}
+                    className="inline-block rounded-full"
+                    src={currentUser?.image}
+                    alt={currentUser?.name}
                   />
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                    Tom Cook
+                    {currentUser?.name}
                   </p>
                   <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
                     View profile
                   </p>
                 </div>
               </div>
-            </a>
+            </Link>
+            <button onClick={() => void signOut()}>
+              <ArrowLeftOnRectangleIcon className="h-5 w-5 rotate-180 text-gray-700 transition-colors hover:text-gray-900" />
+            </button>
           </div>
         </div>
       </aside>

@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 async function seed() {
   try {
-    for (let i = 101; i <= 301; i++) {
+    for (let i = 0; i <= 10; i++) {
       const user = {
         name: `John Doe ${i}`,
         email: `johndoe${i}@example.com`,
