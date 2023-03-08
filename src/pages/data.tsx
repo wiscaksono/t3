@@ -1,12 +1,22 @@
 import Layout from "~/components/Layout";
-import { useState, Fragment, useRef } from "react";
+import {
+  useState,
+  Fragment,
+  useRef,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { api } from "~/utils/api";
+
+import { api, type RouterOutputs } from "~/utils/api";
+import formatDate from "~/utils/formatDate";
+
+type LocationProps = RouterOutputs["location"]["getAll"][0];
 
 export default function Data() {
   const [createModal, setCreateModal] = useState<boolean>(false);
 
-  const { data: locations, refetch: refetch } = api.location.getAll.useQuery();
+  const { data: locations, refetch } = api.location.getAll.useQuery();
 
   return (
     <Layout title={"Data"} data={locations}>
@@ -47,6 +57,19 @@ export default function Data() {
                         </th>
                         <th
                           scope="col"
+                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                        >
+                          Created At
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                        >
+                          Updated At
+                        </th>
+
+                        <th
+                          scope="col"
                           className="relative py-3.5 pl-3 pr-4 sm:pr-6"
                         >
                           <span className="sr-only">Edit</span>
@@ -55,7 +78,11 @@ export default function Data() {
                     </thead>
                     <tbody className="divide-y divide-gray-200 bg-white">
                       {locations?.map((location) => (
-                        <TableRow location={location} refetch={refetch} />
+                        <TableRow
+                          location={location}
+                          refetch={refetch}
+                          key={location.id}
+                        />
                       ))}
                     </tbody>
                   </table>
@@ -75,13 +102,25 @@ export default function Data() {
   );
 }
 
-const TableRow = ({ location, refetch }: any) => {
+const TableRow = ({
+  location,
+  refetch,
+}: {
+  location: LocationProps;
+  refetch: () => void;
+}) => {
   const [editModal, setEditModal] = useState<boolean>(false);
   return (
     <>
       <tr key={location.id}>
         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
           {location.name}
+        </td>
+        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+          {formatDate(location.createdAt)}
+        </td>
+        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+          {formatDate(location.updatedAt)}
         </td>
         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
           <button
@@ -110,7 +149,7 @@ const CreateModal = ({
   refetch,
 }: {
   createModal: boolean;
-  setCreateModal: any;
+  setCreateModal: Dispatch<SetStateAction<boolean>>;
   refetch: () => void;
 }) => {
   const cancelButtonRef = useRef(null);
@@ -226,23 +265,30 @@ const EditModal = ({
   location,
 }: {
   editModal: boolean;
-  setEditModal: any;
+  setEditModal: Dispatch<SetStateAction<boolean>>;
   refetch: () => void;
-  location: any;
+  location: LocationProps;
 }) => {
   const cancelButtonRef = useRef(null);
   const [values, setValues] = useState<string>(location.name);
 
+  const deleteLocation = api.location.delete.useMutation({
+    onSuccess: () => {
+      void refetch();
+      setEditModal(false);
+    },
+  });
+
   const editLocation = api.location.edit.useMutation({
     onSuccess: () => {
       void refetch();
+      setEditModal(false);
     },
   });
 
   const handleEdit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     editLocation.mutate({ id: location.id, name: values });
-    setEditModal(false);
   };
 
   return (
@@ -319,8 +365,9 @@ const EditModal = ({
                         <button
                           type="button"
                           className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                          onClick={() => setEditModal(false)}
-                          ref={cancelButtonRef}
+                          onClick={() =>
+                            deleteLocation.mutate({ id: location.id })
+                          }
                         >
                           Cancel
                         </button>

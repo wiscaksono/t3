@@ -2,10 +2,17 @@ import Layout from "~/components/Layout";
 import Link from "next/link";
 
 import formatDate from "~/utils/formatDate";
-import { api } from "~/utils/api";
+import { api, type RouterOutputs } from "~/utils/api";
+
+type ReportProps = RouterOutputs["report"]["create"];
+type userProps = RouterOutputs["user"]["getAll"][0];
+
+interface ReportUserProps extends ReportProps {
+  user: userProps;
+}
 
 export default function Reports() {
-  const { data: reports, refetch: refetch } = api.report.getAll.useQuery();
+  const { data: reports } = api.report.getAll.useQuery();
 
   return (
     <Layout title={"Reports"} data={reports}>
@@ -69,11 +76,7 @@ export default function Reports() {
                     </thead>
                     <tbody className="divide-y divide-gray-200 bg-white">
                       {reports?.map((report) => (
-                        <TableRow
-                          report={report}
-                          refetch={refetch}
-                          key={report.id}
-                        />
+                        <TableRow report={report} key={report.id} />
                       ))}
                     </tbody>
                   </table>
@@ -87,7 +90,7 @@ export default function Reports() {
   );
 }
 
-const TableRow = ({ report }: any) => {
+const TableRow = ({ report }: { report: ReportUserProps }) => {
   return (
     <tr>
       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">

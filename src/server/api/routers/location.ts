@@ -6,6 +6,20 @@ export const locationRouter = createTRPCRouter({
     return ctx.prisma.location.findMany();
   }),
 
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.location.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
+
   edit: protectedProcedure
     .input(
       z.object({

@@ -1,4 +1,4 @@
-import { useState, Fragment, useEffect } from "react";
+import { useState, Fragment, type Dispatch, type SetStateAction } from "react";
 import { useRouter } from "next/router";
 import { Transition, Listbox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
@@ -7,19 +7,24 @@ import Layout from "~/components/Layout";
 
 import classNames from "~/utils/classNames";
 import formatDate from "~/utils/formatDate";
-import { api } from "~/utils/api";
-import { ROLES, STATUS } from "~/utils/data";
+import { api, type RouterOutputs } from "~/utils/api";
+import { STATUS } from "~/utils/data";
 
 const tabs = ["Details", "Raw Data"];
 
-const Post = () => {
-  const [values, setValues] = useState();
-  const { query } = useRouter();
-  const { data: reportData } = api.report.getById.useQuery(String(query.id));
+type ReportProps = RouterOutputs["report"]["create"];
+type userProps = RouterOutputs["user"]["getAll"][0];
 
-  useEffect(() => {
-    setValues(reportData);
-  }, []);
+interface ReportUserProps extends ReportProps {
+  user: userProps;
+}
+
+const Post = () => {
+  const [values, setValues] = useState<ReportUserProps>();
+  const { query } = useRouter();
+  const { data: reportData } = api.report.getById.useQuery(String(query.id), {
+    onSuccess: (data) => setValues(data),
+  });
 
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
@@ -64,12 +69,20 @@ const Post = () => {
 
 export default Post;
 
-const Details = ({ reportData, values, setValues }: any) => {
+const Details = ({
+  reportData,
+  values,
+  setValues,
+}: {
+  reportData: ReportUserProps;
+  values: ReportUserProps;
+  setValues: Dispatch<SetStateAction<ReportUserProps | undefined>>;
+}) => {
   const [status, setStatus] = useState("PENDING");
 
   const update = api.report.update.useMutation({});
 
-  const handleUpdate = (e: any) => {
+  const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     update.mutate({
       id: reportData.id,
@@ -316,7 +329,7 @@ const Details = ({ reportData, values, setValues }: any) => {
   );
 };
 
-const RawData = ({ reportData }: any) => {
+const RawData = ({ reportData }: { reportData: ReportUserProps }) => {
   return (
     <section className="overflow-x-auto rounded-2xl border p-5">
       <pre className="text-gray-600">{JSON.stringify(reportData, null, 2)}</pre>

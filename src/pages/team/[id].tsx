@@ -1,4 +1,4 @@
-import { useState, Fragment, useRef } from "react";
+import { useState, useRef, Fragment } from "react";
 import { useRouter } from "next/router";
 import { Dialog, Transition, Listbox } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
@@ -8,19 +8,21 @@ import { getSession } from "next-auth/react";
 import Layout from "~/components/Layout";
 
 import classNames from "~/utils/classNames";
-import { api } from "~/utils/api";
+import { api, type RouterOutputs } from "~/utils/api";
 import { ROLES } from "~/utils/data";
 
 const tabs = ["Details", "Raw Data"];
 
-const Post = ({ role }: any) => {
+type UserDataProps = RouterOutputs["user"]["getById"];
+
+const Post = ({ role }: { role: "ADMIN" | "USER" }) => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
   const { query } = useRouter();
   const { data: userData } = api.user.getById.useQuery(String(query.id));
 
   return (
-    <Layout title={userData?.name} data={userData}>
+    <Layout title={String(userData?.name)} data={userData ?? ""}>
       <section>
         <div className="hidden sm:block">
           <div className="border-b border-gray-200">
@@ -49,7 +51,7 @@ const Post = ({ role }: any) => {
 
         <section className="w-1/2">
           {activeTab === "Details" && (
-            <Details userData={userData} userRole={role} />
+            <Details userData={userData ?? null} userRole={role} />
           )}
           {activeTab === "Raw Data" && <RawData userData={userData} />}
         </section>
@@ -60,7 +62,13 @@ const Post = ({ role }: any) => {
 
 export default Post;
 
-const Details = ({ userData, userRole }: any) => {
+const Details = ({
+  userData,
+  userRole,
+}: {
+  userData: UserDataProps;
+  userRole: "ADMIN" | "USER";
+}) => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [role, setRole] = useState("ADMIN");
   const cancelButtonRef = useRef(null);

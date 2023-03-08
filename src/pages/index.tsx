@@ -19,8 +19,8 @@ export default function Example() {
     count: report._count.title,
   }));
 
-  let result = data?.reduce((acc, curr) => {
-    let existing = acc.find((item) => item.name === curr.name);
+  const result = data?.reduce((acc, curr) => {
+    const existing = acc.find((item) => item.name === curr.name);
     if (existing) {
       existing.count += curr.count;
     } else {
@@ -37,7 +37,6 @@ export default function Example() {
           <XAxis dataKey="name" />
           <YAxis />
           <Tooltip />
-          {/* <Legend /> */}
           <Line type="monotone" dataKey="count" stroke="#82ca9d" />
         </LineChart>
       </ResponsiveContainer>

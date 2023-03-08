@@ -1,4 +1,5 @@
 import Header from "~/components/Head";
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
 
@@ -10,8 +11,9 @@ export default function Login() {
         <div className="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
             <div>
-              <img
-                className="h-12 w-auto"
+              <Image
+                width={48}
+                height={48}
                 src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
                 alt="Your Company"
               />

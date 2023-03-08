@@ -11,7 +11,7 @@ export default function User() {
 
   const createReport = api.report.create.useMutation();
 
-  const handleCreate = (e: any) => {
+  const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     createReport.mutate({
       title: values.title,

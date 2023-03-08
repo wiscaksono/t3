@@ -1,4 +1,10 @@
-import { useState, Fragment, useRef } from "react";
+import {
+  useState,
+  Fragment,
+  useRef,
+  type SetStateAction,
+  type Dispatch,
+} from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,9 +14,11 @@ import Layout from "~/components/Layout";
 
 import formatDate from "~/utils/formatDate";
 import classNames from "~/utils/classNames";
-import { api } from "~/utils/api";
+import { api, type RouterOutputs } from "~/utils/api";
 
 const tabs = ["Grid", "Table"];
+
+type userDataProps = RouterOutputs["user"]["getAll"][0];
 
 export default function Team() {
   const [search, setSearch] = useState<string>("");
@@ -89,10 +97,10 @@ export default function Team() {
   );
 }
 
-const Grid = ({ usersData }: any) => {
+const Grid = (usersData: userDataProps[]) => {
   return (
     <ul role={"list"} className="flex flex-wrap justify-between gap-6">
-      {usersData?.map((user: any) => (
+      {usersData?.map((user: userDataProps) => (
         <li key={user.id}>
           <Link href={`/team/${user.id}`}>
             <figure className="rounded-2xl border p-5 transition-shadow hover:shadow-md">
@@ -117,7 +125,7 @@ const Grid = ({ usersData }: any) => {
   );
 };
 
-const Table = ({ usersData }: any) => {
+const Table = (usersData: userDataProps[]) => {
   return (
     <div className="flow-root">
       <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -167,7 +175,7 @@ const Table = ({ usersData }: any) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {usersData.map((user: any) => (
+              {usersData.map((user: userDataProps) => (
                 <tr key={user.id}>
                   <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-0">
                     <div className="flex items-center">
@@ -231,7 +239,15 @@ type valueProps = {
   password: string;
 };
 
-const CreateModal = ({ createModal, setCreateModal, refetchUser }: any) => {
+const CreateModal = ({
+  createModal,
+  setCreateModal,
+  refetchUser,
+}: {
+  createModal: boolean;
+  setCreateModal: Dispatch<SetStateAction<boolean>>;
+  refetchUser: () => void;
+}) => {
   const cancelButtonRef = useRef(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [values, setValues] = useState<valueProps>({

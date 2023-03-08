@@ -2,7 +2,15 @@ import Sidebar from "./Sidebar";
 import Header from "./Head";
 import Loader from "./Loader";
 
-export default function Layout({ children, title, data }: any) {
+export default function Layout({
+  children,
+  title,
+  data,
+}: {
+  children: React.ReactNode;
+  title: string;
+  data: unknown;
+}) {
   return (
     <>
       <Header title={title} />

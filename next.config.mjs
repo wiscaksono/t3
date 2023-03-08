@@ -20,7 +20,7 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ["avatars.githubusercontent.com", "plchldr.co"],
+    domains: ["avatars.githubusercontent.com", "plchldr.co", "tailwindui.com"],
   },
 };
 export default config;
