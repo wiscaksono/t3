@@ -1,7 +1,17 @@
 import Layout from "~/components/Layout";
 import { getSession } from "next-auth/react";
+import { api } from "~/utils/api";
 
 export default function Example() {
+  const { data: reportChart } = api.chart.reportData.useQuery();
+
+  const data = reportChart?.map((report) => ({
+    x: report.createdAt.toISOString().slice(0, 10),
+    y: report._count.title,
+  }));
+
+  console.log(data);
+
   return (
     <Layout title={"Dashboard"} data={[]}>
       <section>

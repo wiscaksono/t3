@@ -3,6 +3,7 @@ import { exampleRouter } from "~/server/api/routers/example";
 import { userRouter } from "./routers/users";
 import { locationRouter } from "./routers/location";
 import { reportRouter } from "./routers/report";
+import { chartRouter } from "./routers/chart";
 
 /**
  * This is the primary router for your server.
@@ -13,6 +14,7 @@ export const appRouter = createTRPCRouter({
   example: exampleRouter,
   location: locationRouter,
   report: reportRouter,
+  chart: chartRouter,
   user: userRouter,
 });
 

@@ -9,7 +9,7 @@ import Layout from "~/components/Layout";
 
 import classNames from "~/utils/classNames";
 import { api } from "~/utils/api";
-import ROLES from "~/utils/data";
+import { ROLES } from "~/utils/data";
 
 const tabs = ["Details", "Raw Data"];
 
@@ -20,7 +20,7 @@ const Post = ({ role }: any) => {
   const { data: userData } = api.user.getById.useQuery(String(query.id));
 
   return (
-    <Layout title={userData.name} data={userData}>
+    <Layout title={userData?.name} data={userData}>
       <section>
         <div className="hidden sm:block">
           <div className="border-b border-gray-200">
