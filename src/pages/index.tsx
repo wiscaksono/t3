@@ -1,33 +1,46 @@
 import Layout from "~/components/Layout";
 import { getSession } from "next-auth/react";
 import { api } from "~/utils/api";
+import {
+  LineChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Line,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function Example() {
   const { data: reportChart } = api.chart.reportData.useQuery();
 
   const data = reportChart?.map((report) => ({
-    x: report.createdAt.toISOString().slice(0, 10),
-    y: report._count.title,
+    name: report.createdAt.toISOString().slice(0, 10),
+    count: report._count.title,
   }));
 
-  console.log(data);
+  let result = data?.reduce((acc, curr) => {
+    let existing = acc.find((item) => item.name === curr.name);
+    if (existing) {
+      existing.count += curr.count;
+    } else {
+      acc.push(curr);
+    }
+    return acc;
+  }, []);
 
   return (
     <Layout title={"Dashboard"} data={[]}>
-      <section>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugiat,
-        excepturi! Quaerat laudantium ratione laborum, sunt consequuntur natus
-        corrupti consectetur recusandae adipisci sit ipsam debitis atque.
-        Praesentium temporibus dolorem assumenda quis minima repellat, minus,
-        vero corrupti ipsa placeat enim perspiciatis quasi laudantium,
-        recusandae magnam expedita! Reiciendis quos fugiat consequuntur quae
-        quis sed voluptate in molestias accusamus aspernatur id modi saepe nisi,
-        consequatur necessitatibus mollitia cumque aliquid sequi, nulla
-        repellendus eum, ad deserunt. Quibusdam aut iste itaque distinctio,
-        numquam impedit ipsam soluta consequuntur. Facilis eum, at vitae fugit
-        quod a tenetur ducimus. Corrupti non fuga sint voluptate, aliquid
-        molestias a ex placeat!
-      </section>
+      <ResponsiveContainer width={500} height={500}>
+        <LineChart data={result}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          {/* <Legend /> */}
+          <Line type="monotone" dataKey="count" stroke="#82ca9d" />
+        </LineChart>
+      </ResponsiveContainer>
     </Layout>
   );
 }
