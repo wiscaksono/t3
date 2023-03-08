@@ -1,3 +1,4 @@
 const ROLES = ["USER", "ADMIN"];
+const STATUS = ["PENDING", "ACCEPTED", "DONE"];
 
-export default ROLES;
+export { ROLES, STATUS };

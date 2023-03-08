@@ -3,7 +3,7 @@ import { getSession } from "next-auth/react";
 
 export default function Example() {
   return (
-    <Layout title={"Dashboard"}>
+    <Layout title={"Dashboard"} data={[]}>
       <section>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugiat,
         excepturi! Quaerat laudantium ratione laborum, sunt consequuntur natus

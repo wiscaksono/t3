@@ -6,6 +6,7 @@ import {
   HomeIcon,
   InboxIcon,
   UsersIcon,
+  CircleStackIcon,
 } from "@heroicons/react/24/outline";
 
 type NavigationItem = {
@@ -34,7 +35,8 @@ const useStore = create<StoreState>((set) => ({
   navigation: [
     { name: "Home", href: "/", icon: HomeIcon, current: true },
     { name: "Team", href: "/team", icon: UsersIcon, current: false },
-    { name: "Projects", href: "/projects", icon: FolderIcon, current: false },
+    { name: "Data", href: "/data", icon: CircleStackIcon, current: false },
+    { name: "Reports", href: "/reports", icon: FolderIcon, current: false },
     { name: "Calendar", href: "/calendar", icon: CalendarIcon, current: false },
     { name: "Documents", href: "/documents", icon: InboxIcon, current: false },
     { name: "Reports", href: "/reports", icon: ChartBarIcon, current: false },

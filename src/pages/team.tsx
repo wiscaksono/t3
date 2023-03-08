@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { getSession } from "next-auth/react";
 
-import Loader from "~/components/Loader";
 import Layout from "~/components/Layout";
 
 import formatDate from "~/utils/formatDate";
@@ -22,10 +21,8 @@ export default function Team() {
     search: search,
   });
 
-  if (!usersData) return <Loader />;
-
   return (
-    <Layout title="Team">
+    <Layout title="Team" data={usersData}>
       <section>
         <div className="sm:hidden">
           <label htmlFor="tabs" className="sr-only">

@@ -3,28 +3,24 @@ import { useRouter } from "next/router";
 import { Dialog, Transition, Listbox } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { getSession } from "next-auth/react";
 
-import Loader from "~/components/Loader";
 import Layout from "~/components/Layout";
 
 import classNames from "~/utils/classNames";
 import { api } from "~/utils/api";
 import ROLES from "~/utils/data";
 
-import useStore from "~/store/store";
-
 const tabs = ["Details", "Raw Data"];
 
-const Post = () => {
+const Post = ({ role }: any) => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
   const { query } = useRouter();
   const { data: userData } = api.user.getById.useQuery(String(query.id));
 
-  if (!userData) return <Loader />;
-
   return (
-    <Layout title={userData.name}>
+    <Layout title={userData.name} data={userData}>
       <section>
         <div className="hidden sm:block">
           <div className="border-b border-gray-200">
@@ -52,7 +48,9 @@ const Post = () => {
         </h1>
 
         <section className="w-1/2">
-          {activeTab === "Details" && <Details userData={userData} />}
+          {activeTab === "Details" && (
+            <Details userData={userData} userRole={role} />
+          )}
           {activeTab === "Raw Data" && <RawData userData={userData} />}
         </section>
       </section>
@@ -62,12 +60,11 @@ const Post = () => {
 
 export default Post;
 
-const Details = ({ userData }: any) => {
+const Details = ({ userData, userRole }: any) => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [role, setRole] = useState("ADMIN");
   const cancelButtonRef = useRef(null);
   const { push, query } = useRouter();
-  const { currentUser } = useStore();
 
   const handleDelete = api.user.delete.useMutation({
     onSuccess: () => {
@@ -242,21 +239,23 @@ const Details = ({ userData }: any) => {
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2.5">
-          <button
-            type="button"
-            className="w-max rounded-md bg-gray-300 py-2 px-3 text-sm font-semibold text-gray-600 shadow-sm transition-colors hover:bg-red-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            onClick={() => void setDeleteModal(true)}
-          >
-            Delete
-          </button>
-          <button
-            type="submit"
-            className="w-max rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Update
-          </button>
-        </div>
+        {userRole === "ADMIN" && (
+          <div className="flex items-center justify-end gap-2.5">
+            <button
+              type="button"
+              className="w-max rounded-md bg-gray-300 py-2 px-3 text-sm font-semibold text-gray-600 shadow-sm transition-colors hover:bg-red-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              onClick={() => void setDeleteModal(true)}
+            >
+              Delete
+            </button>
+            <button
+              type="submit"
+              className="w-max rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Update
+            </button>
+          </div>
+        )}
       </form>
 
       <Transition.Root show={deleteModal} as={Fragment}>
@@ -351,3 +350,20 @@ const RawData = ({ userData }: any) => {
     </section>
   );
 };
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession(context);
+  const role = session?.user.role;
+
+  if (!session)
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/auth",
+      },
+    };
+
+  return {
+    props: { session, role },
+  };
+}
